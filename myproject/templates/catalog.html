@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block title %}Каталог{% endblock %}
+
+{% block content %}
+<h1>Каталог товаров</h1>
+
+<div class="row">
+    {% for product in products %}
+    <div class="col-3 mb-4">
+        <div class="card">
+            <img src="{{ product.image.url }}" class="card-img-top">
+            <div class="card-body">
+                <h5 class="card-title">{{ product.name }}</h5>
+                <p>{{ product.price }} ₽</p>
+                <a href="/product/{{ product.id }}/" class="btn btn-primary">Подробнее</a>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+{% endblock %}
