@@ -6,3 +6,5 @@ admin.site.register(Product)
 admin.site.register(Favorite)
 admin.site.register(Cart)
 admin.site.register(CartItem)
+
+

@@ -1,0 +1,88 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+
+    <h2 class="mb-4">Корзина</h2>
+
+    {% if items %}
+        <table class="table table-bordered align-middle">
+            <thead class="table-light">
+                <tr>
+                    <th style="width: 120px;">Фото</th>
+                    <th>Товар</th>
+                    <th style="width: 120px;">Цена</th>
+                    <th style="width: 120px;">Кол-во</th>
+                    <th style="width: 120px;">Сумма</th>
+                    <th style="width: 100px;"></th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for item in items %}
+                <tr>
+                    <!-- Фото товара -->
+                    <td>
+                        <img src="{{ item.product.image.url }}" 
+                             alt="{{ item.product.name }}" 
+                             style="width: 100px; height: 100px; object-fit: cover;">
+                    </td>
+
+                    <!-- Название -->
+                    <td>
+                        <strong>{{ item.product.name }}</strong>
+                    </td>
+
+                    <!-- Цена за штуку -->
+                    <td>
+                        {{ item.price_at_moment }} BYN
+                    </td>
+
+                    <!-- Количество -->
+                    <td class="text-center">
+
+    <a href="{% url 'decrease_quantity' item.id %}" 
+       class="btn btn-outline-secondary btn-sm">−</a>
+
+    <span class="mx-2">{{ item.quantity }}</span>
+
+    <a href="{% url 'increase_quantity' item.id %}" 
+       class="btn btn-outline-secondary btn-sm">+</a>
+
+</td>
+
+
+                    <!-- Сумма -->
+                    <td>
+                        {{ item.price_at_moment|floatformat:2|add:item.quantity }}
+                        {{ item.total_price }} BYN
+                    </td>
+
+                    <!-- Удаление -->
+                    <td>
+                        <a href="{% url 'remove_from_cart' item.id %}" 
+                           class="btn btn-danger btn-sm">
+                            Удалить
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <div class="text-end mt-3">
+            <h4>Итого: <strong>{{ total }} BUN</strong></h4>
+        </div>
+        <div class="text-end mt-4">
+    <a href="{% url 'make_order' %}" class="btn btn-success btn-lg">
+        Оформить заказ
+    </a>
+</div>
+
+
+    {% else %}
+        <p>Корзина пуста.</p>
+    {% endif %}
+
+</div>
+{% endblock %}

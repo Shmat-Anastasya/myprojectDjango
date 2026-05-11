@@ -1,19 +1,63 @@
 {% extends 'base.html' %}
 
-{% block title %}Каталог{% endblock %}
-
 {% block content %}
-<h1>Каталог товаров</h1>
+<h2>Каталог</h2>
 
+<!-- ФИЛЬТРЫ И СОРТИРОВКА -->
+<form method="get" class="mb-4 d-flex gap-3">
+
+    <!-- Фильтр по категории -->
+<select name="category" class="form-select" style="width:200px;">
+    <option value="">Все категории</option>
+
+    {% for cat in categories %}
+        <option value="{{ cat.name }}" {% if current_category == cat.name %}selected{% endif %}>
+            {{ cat.name }}
+        </option>
+    {% endfor %}
+</select>
+
+
+    <!-- Сортировка -->
+ <select name="sort" class="form-select" style="width:200px;">
+    <option value="">Без сортировки</option>
+    <option value="price_asc" {% if current_sort == "price_asc" %}selected{% endif %}>Цена ↑</option>
+    <option value="price_desc" {% if current_sort == "price_desc" %}selected{% endif %}>Цена ↓</option>
+    <option value="name" {% if current_sort == "name" %}selected{% endif %}>По названию</option>
+</select>
+
+
+    <button class="btn btn-dark" type="submit">Применить</button>
+
+</form>
+
+<!-- КАРТОЧКИ ТОВАРОВ -->
 <div class="row">
     {% for product in products %}
-    <div class="col-3 mb-4">
-        <div class="card">
-            <img src="{{ product.image.url }}" class="card-img-top">
-            <div class="card-body">
+    <div class="col-md-3 mb-4">
+        <div class="card h-100">
+
+            <!-- Картинка -->
+            <a href="/product/{{ product.id }}/">
+                <img src="{{ product.image.url }}" class="card-img-top" alt="{{ product.name }}"
+     style="height: 250px; object-fit: cover;">
+            </a>
+
+            <div class="card-body text-center">
+
+                <!-- Название -->
                 <h5 class="card-title">{{ product.name }}</h5>
-                <p>{{ product.price }} ₽</p>
-                <a href="/product/{{ product.id }}/" class="btn btn-primary">Подробнее</a>
+
+                <!-- Цена -->
+                <p class="card-text">{{ product.price }} BYN</p>
+
+                <!-- Кнопка -->
+                <form action="/cart/add/{{ product.id }}/" method="post">
+    {% csrf_token %}
+    <button class="btn btn-primary">Добавить в корзину</button>
+</form>
+
+
             </div>
         </div>
     </div>
