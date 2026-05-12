@@ -1,5 +1,6 @@
 from django.shortcuts import render, get_object_or_404, redirect
-from django.contrib.auth.forms import UserCreationForm
+# from django.contrib.auth.forms import UserCreationForm
+from accounts.forms import CustomUserCreationForm
 from django.http import HttpResponse
 
 from .models import Product, Category, Cart, CartItem
@@ -7,11 +8,9 @@ from .models import Order, OrderItem
 import uuid
 
 
-# ГЛАВНАЯ СТРАНИЦА
 def index(request):
     return render(request, 'index.html')
 
-# КАТАЛОГ ТОВАРОВ + ФИЛЬТРАЦИЯ + СОРТИРОВКА
 def catalog(request):
     products = Product.objects.all()
     categories = Category.objects.all()
@@ -20,11 +19,11 @@ def catalog(request):
     category = request.GET.get('category')
     sort = request.GET.get('sort')
 
-    # --- Фильтрация по категории ---
+    # Фильтрация по категории
     if category:
         products = products.filter(category__name=category)
 
-    # --- Сортировка ---
+    # Сортировка
     if sort == 'price_asc':
         products = products.order_by('price')
     elif sort == 'price_desc':
@@ -39,36 +38,31 @@ def catalog(request):
         'current_sort': sort,
     })
 
-# СТРАНИЦА ОДНОГО ТОВАРА
+# стр товара
 def product_detail(request, pk):
     product = get_object_or_404(Product, pk=pk)
     return render(request, 'product.html', {'product': product})
 
-# ТЕСТОВАЯ СТРАНИЦА (можно удалить)
 def test(request):
     return render(request, 'test.html')
 
-# РЕГИСТРАЦИЯ ПОЛЬЗОВАТЕЛЯ
+# регист
 def register(request):
     if request.method == 'POST':
-        form = UserCreationForm(request.POST)
-
-        # Если форма валидна — создаём пользователя
+        form = CustomUserCreationForm(request.POST)
         if form.is_valid():
-            form.save()
-            return redirect('login')
-
+            user = form.save()          
+            return redirect('profile')  
     else:
-        form = UserCreationForm()
+        form = CustomUserCreationForm()
 
     return render(request, 'register.html', {'form': form})
 
-# ЛИЧНЫЙ КАБИНЕТ
-
+# лк
 def profile(request):
     return render(request, 'profile.html')
 
-# КОРЗИНА: ОТОБРАЖЕНИЕ
+#корзина
 def cart(request):
     if not request.user.is_authenticated:
         return redirect('login')
@@ -91,14 +85,14 @@ def cart(request):
         'total': total,
     })
 
-# КОРЗИНА: ДОБАВЛЕНИЕ ТОВАРА
+# добавл тов
 def add_to_cart(request, pk):
     if not request.user.is_authenticated:
         return redirect('login')
 
     product = get_object_or_404(Product, pk=pk)
 
-    # Получаем активную корзину
+    #актив корзина
     cart, created = Cart.objects.get_or_create(user=request.user, status='active')
 
     # Создаём или обновляем CartItem
@@ -108,20 +102,19 @@ def add_to_cart(request, pk):
         defaults={'price_at_moment': product.price}
     )
 
-    # Если товар уже есть — увеличиваем количество
     if not created:
         item.quantity += 1
 
     item.save()
     return redirect('cart')
 
-# КОРЗИНА: УДАЛЕНИЕ ТОВАРА
+# удал тов
 def remove_from_cart(request, item_id):
     item = get_object_or_404(CartItem, id=item_id)
     item.delete()
     return redirect('cart')
 
-# КОРЗИНА: ИЗМЕНЕНИЕ КОЛИЧЕСТВА
+# измен кол-ва
 def increase_quantity(request, item_id):
     item = get_object_or_404(CartItem, id=item_id)
     item.quantity += 1
@@ -142,11 +135,11 @@ def decrease_quantity(request, item_id):
 
     return redirect('cart')
 
-# ИЗБРАННОЕ (пока пусто)
+# избран
 def favorites(request):
     return render(request, 'favorites.html')
 
-# ОФОРМЛЕНИЕ ЗАКАЗА
+# оформ заказа
 def make_order(request):
     if not request.user.is_authenticated:
         return redirect('login')
@@ -183,12 +176,12 @@ def make_order(request):
 
     return redirect('orders')
 
-# ИСТОРИЯ ЗАКАЗОВ
+# ист заказов
 def orders(request):
     if not request.user.is_authenticated:
         return redirect('login')
 
-    # Все заказы пользователя
+    # Все заказы
     orders = Order.objects.filter(user=request.user).order_by('-created_at')
 
     return render(request, 'orders.html', {'orders': orders})

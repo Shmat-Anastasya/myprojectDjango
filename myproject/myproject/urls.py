@@ -15,39 +15,32 @@ from django.contrib.auth import views as auth_views
 
 urlpatterns = [
 
-    # Админка
+    #админ
     path('admin/', admin.site.urls),
 
-    # Основные страницы
     path('', views.index),                    
     path('catalog/', views.catalog),          
     path('product/<int:pk>/', views.product_detail),  
     path('test/', views.test),                 
 
-    # Авторизация и регистрация
     path('login/', auth_views.LoginView.as_view(template_name='login.html'), name='login'),
     path('logout/', auth_views.LogoutView.as_view(), name='logout'),
     path('register/', views.register, name='register'),
 
-    # Личный кабинет и профиль
     path('profile/', views.profile, name='profile'),
 
-    # Корзина
     path('cart/', views.cart, name='cart'),                        # Страница корзины
     path('cart/add/<int:pk>/', views.add_to_cart, name='add_to_cart'),  # Добавить товар
     path('cart/remove/<int:item_id>/', views.remove_from_cart, name='remove_from_cart'),  # Удалить товар
     path('cart/increase/<int:item_id>/', views.increase_quantity, name='increase_quantity'),  # +
     path('cart/decrease/<int:item_id>/', views.decrease_quantity, name='decrease_quantity'),  # –
 
-    # Избранное
     path('favorites/', views.favorites, name='favorites'),
 
-    # Заказы
     path('orders/', views.orders, name='orders'),          # История заказов
     path('order/make/', views.make_order, name='make_order'),  # Оформление заказа
 ]
 
-# Медиа-файлы (картинки товаров)
 from django.conf import settings
 from django.conf.urls.static import static
 
