@@ -9,7 +9,7 @@ URL configuration for myproject project.
 """
 
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include
 from shop import views
 from django.contrib.auth import views as auth_views
 
@@ -25,9 +25,9 @@ urlpatterns = [
 
     path('login/', auth_views.LoginView.as_view(template_name='login.html'), name='login'),
     path('logout/', auth_views.LogoutView.as_view(), name='logout'),
-    path('register/', views.register, name='register'),
+    # path('register/', views.register, name='register'),
 
-    path('profile/', views.profile, name='profile'),
+    # path('profile/', views.profile, name='profile'),
 
     path('cart/', views.cart, name='cart'),                        # Страница корзины
     path('cart/add/<int:pk>/', views.add_to_cart, name='add_to_cart'),  # Добавить товар
@@ -39,6 +39,10 @@ urlpatterns = [
 
     path('orders/', views.orders, name='orders'),          # История заказов
     path('order/make/', views.make_order, name='make_order'),  # Оформление заказа
+
+    # accounts
+    path('register/', include('accounts.urls')),
+
 ]
 
 from django.conf import settings

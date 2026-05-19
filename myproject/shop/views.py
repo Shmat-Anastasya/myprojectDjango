@@ -46,21 +46,21 @@ def product_detail(request, pk):
 def test(request):
     return render(request, 'test.html')
 
-# регист
-def register(request):
-    if request.method == 'POST':
-        form = CustomUserCreationForm(request.POST)
-        if form.is_valid():
-            user = form.save()          
-            return redirect('profile')  
-    else:
-        form = CustomUserCreationForm()
+# # регист
+# def register(request):
+#     if request.method == 'POST':
+#         form = CustomUserCreationForm(request.POST)
+#         if form.is_valid():
+#             user = form.save()          
+#             return redirect('profile')  
+#     else:
+#         form = CustomUserCreationForm()
 
-    return render(request, 'register.html', {'form': form})
+#     return render(request, 'register.html', {'form': form})
 
-# лк
-def profile(request):
-    return render(request, 'profile.html')
+# # лк
+# def profile(request):
+#     return render(request, 'profile.html')
 
 #корзина
 def cart(request):
