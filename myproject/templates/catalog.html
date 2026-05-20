@@ -32,36 +32,37 @@
 </form>
 
 <!-- КАРТОЧКИ ТОВАРОВ -->
-<div class="row">
-    {% for product in products %}
-    <div class="col-md-3 mb-4">
-        <div class="card h-100">
+{% for product in products %}
+<div class="col-md-3 mb-4">
+    <div class="card h-100">
 
-            <!-- Картинка -->
-            <a href="/product/{{ product.id }}/">
-                <img src="{{ product.image.url }}" class="card-img-top" alt="{{ product.name }}"
-     style="height: 250px; object-fit: cover;">
+        <a href="/product/{{ product.id }}/">
+            <img src="{{ product.image.url }}" class="card-img-top" alt="{{ product.name }}"
+                 style="height: 250px; object-fit: cover;">
+        </a>
+
+        <div class="card-body text-center">
+
+            <h5 class="card-title">{{ product.name }}</h5>
+            <p class="card-text">{{ product.price }} BYN</p>
+
+            <form action="/cart/add/{{ product.id }}/" method="post">
+                {% csrf_token %}
+                <button class="btn btn-primary">Добавить в корзину</button>
+            </form>
+
+            <!-- ❤️ СЕРДЕЧКО -->
+            <a href="{% url 'toggle_favorite' product.pk %}" class="d-block mt-2">
+                {% if product.id in favorite_ids %}
+                    ❤️
+                    {% else %}
+                        🤍
+                        {% endif %}
             </a>
 
-            <div class="card-body text-center">
-
-                <!-- Название -->
-                <h5 class="card-title">{{ product.name }}</h5>
-
-                <!-- Цена -->
-                <p class="card-text">{{ product.price }} BYN</p>
-
-                <!-- Кнопка -->
-                <form action="/cart/add/{{ product.id }}/" method="post">
-    {% csrf_token %}
-    <button class="btn btn-primary">Добавить в корзину</button>
-</form>
-
-
-            </div>
         </div>
     </div>
-    {% endfor %}
 </div>
+{% endfor %}
 
 {% endblock %}

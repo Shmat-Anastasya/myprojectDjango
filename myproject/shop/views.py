@@ -3,8 +3,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 from accounts.forms import CustomUserCreationForm
 from django.http import HttpResponse
 
-from .models import Product, Category, Cart, CartItem
-from .models import Order, OrderItem
+from .models import Product, Category, Cart, CartItem, Order, OrderItem, Favorite
 import uuid
 
 
@@ -31,20 +30,35 @@ def catalog(request):
     elif sort == 'name':
         products = products.order_by('name')
 
+    # Избранное
+    if request.user.is_authenticated:
+        favorite_ids = set(
+            Favorite.objects.filter(user=request.user).values_list('product_id', flat=True)
+        )
+    else:
+        favorite_ids = set()
+
     return render(request, 'catalog.html', {
         'products': products,
         'categories': categories,
         'current_category': category,
         'current_sort': sort,
+        'favorite_ids': favorite_ids,
     })
+
 
 # стр товара
 def product_detail(request, pk):
     product = get_object_or_404(Product, pk=pk)
-    return render(request, 'product.html', {'product': product})
 
-def test(request):
-    return render(request, 'test.html')
+    is_favorite = False
+    if request.user.is_authenticated:
+        is_favorite = Favorite.objects.filter(user=request.user, product=product).exists()
+
+    return render(request, 'product.html', {
+        'product': product,
+        'is_favorite': is_favorite,
+    })
 
 # # регист
 # def register(request):
@@ -137,7 +151,11 @@ def decrease_quantity(request, item_id):
 
 # избран
 def favorites(request):
-    return render(request, 'favorites.html')
+    if not request.user.is_authenticated:
+        return redirect('login')
+
+    favorites = Favorite.objects.filter(user=request.user)
+    return render(request, 'favorites.html', {'favorites': favorites})
 
 # оформ заказа
 def make_order(request):
@@ -185,3 +203,19 @@ def orders(request):
     orders = Order.objects.filter(user=request.user).order_by('-created_at')
 
     return render(request, 'orders.html', {'orders': orders})
+
+def toggle_favorite(request, pk):
+    if not request.user.is_authenticated:
+        return redirect('login')
+
+    product = get_object_or_404(Product, pk=pk)
+
+    fav, created = Favorite.objects.get_or_create(
+        user=request.user,
+        product=product
+    )
+
+    if not created:
+        fav.delete()
+
+    return redirect(request.META.get('HTTP_REFERER', 'catalog'))

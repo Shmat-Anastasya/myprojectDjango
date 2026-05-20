@@ -15,5 +15,13 @@
         <p><strong>Цена:</strong> {{ product.price }} ₽</p>
     </div>
 </div>
+<a href="{% url 'toggle_favorite' product.pk %}">
+    {% if is_favorite %}
+        ❤️ В избранном
+    {% else %}
+        🤍 Добавить в избранное
+    {% endif %}
+</a>
+
 
 {% endblock %}
