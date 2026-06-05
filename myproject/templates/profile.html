@@ -3,6 +3,14 @@
 {% block content %}
 <h2>Личный кабинет</h2>
 
+<p><strong>Имя:</strong> {{ request.user.first_name }}</p>
+<p><strong>Email:</strong> {{ request.user.email }}</p>
+<p><strong>Телефон:</strong> {{ request.user.phone }}</p>
+
+<a href="{% url 'profile_edit' %}">Редактировать данные</a>
+
+<hr>
+
 <ul>
     <li><a href="/favorites/">Избранное</a></li>
     <li><a href="/orders/">История заказов</a></li>
